@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `--version` to both entry points, using Maven manifest metadata and a `development` label for unpackaged runs; verify packaged version output automatically.
+- Cover duplicate HTML destinations and symlink report paths with subprocess regressions that preserve input and target contents.
 - Report a directory iteration failure as a scan warning and keep the results from readable files and sibling directories.
 - Add a short CLI walkthrough, a synthetic sample-folder quickstart, and links to scoped starter contributions.
 

@@ -94,6 +94,7 @@
           <archive>
             <manifest>
               <mainClass>dev.dupelens.Main</mainClass>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
           </archive>
         </configuration>

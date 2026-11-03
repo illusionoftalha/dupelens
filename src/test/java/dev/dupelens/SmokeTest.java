@@ -12,13 +12,17 @@ public final class SmokeTest {
     private static String sizeLabel(long bytes) { return Main.readable(bytes); }
 
     private static CliResult runCli(String... args) throws Exception {
+        return runApp(Main.class, args);
+    }
+
+    private static CliResult runApp(Class<?> app, String... args) throws Exception {
         Path java = Path.of(System.getProperty("java.home"), "bin",
                 System.getProperty("os.name").startsWith("Windows") ? "java.exe" : "java");
         List<String> command = new ArrayList<>();
         command.add(java.toString());
         command.add("-cp");
         command.add(System.getProperty("java.class.path"));
-        command.add(Main.class.getName());
+        command.add(app.getName());
         command.addAll(Arrays.asList(args));
         Process process = new ProcessBuilder(command).redirectErrorStream(true).start();
         String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
@@ -28,6 +32,13 @@ public final class SmokeTest {
     public static void main(String[] args) throws Exception {
         Path root = Files.createTempDirectory("dupelens-test");
         try {
+            for (Class<?> app : List.of(Main.class, Review.class)) {
+                CliResult version = runApp(app, "--version");
+                check(version.exitCode() == 0 && version.output().strip().equals("DupeLens development"),
+                        "unpackaged version must exit without scanning or starting a session: " + version.output());
+                check(runApp(app, "--version", "unexpected").exitCode() != 0,
+                        "version option with extra arguments must be rejected");
+            }
             Files.writeString(root.resolve("one.txt"), "same");
             Files.writeString(root.resolve("two.txt"), "same");
             Files.writeString(root.resolve("different.txt"), "diff");
@@ -86,6 +97,30 @@ public final class SmokeTest {
             CliResult existing = runCli(input.toString(), "--html", existingReport.toString());
             check(existing.exitCode() != 0, "existing report must make CLI exit nonzero: " + existing.output());
             check(Arrays.equals(Files.readAllBytes(existingReport), existingBytes), "existing report must remain byte-for-byte unchanged");
+
+            Path duplicateReport = root.resolve("duplicate option report.html");
+            CliResult duplicateOption = runCli(input.toString(), "--html", existingReport.toString(), "--html", duplicateReport.toString());
+            check(duplicateOption.exitCode() != 0, "duplicate report options must be rejected");
+            check(Arrays.equals(Files.readAllBytes(existingReport), existingBytes) && !Files.exists(duplicateReport),
+                    "duplicate options must preserve both report destinations");
+
+            Path linkTarget = root.resolve("symlink target.txt");
+            Path reportLink = root.resolve("symlink report.html");
+            Files.writeString(linkTarget, "preserve this target");
+            boolean linkAvailable = false;
+            try {
+                Files.createSymbolicLink(reportLink, linkTarget.getFileName());
+                linkAvailable = true;
+            } catch (UnsupportedOperationException | java.io.IOException | SecurityException e) {
+                System.out.println("Report symlink fixture unavailable on this platform: " + e.getClass().getSimpleName());
+            }
+            if (linkAvailable) {
+                CliResult symlinkReport = runCli(input.toString(), "--html", reportLink.toString());
+                check(symlinkReport.exitCode() != 0, "report symlink must not be replaced");
+                check(Files.isSymbolicLink(reportLink) && Files.readSymbolicLink(reportLink).equals(linkTarget.getFileName()),
+                        "report symlink changed");
+                check(Files.readString(linkTarget).equals("preserve this target"), "report symlink target changed");
+            }
 
             byte[] firstBefore = Files.readAllBytes(firstInput);
             CliResult samePath = runCli(input.toString(), "--html", firstInput.toString());

@@ -129,6 +129,15 @@ Read the [architecture](docs/architecture.md) for implementation details and [se
 
 ## Build and test
 
+Source builds also support `--version` in both apps:
+
+```sh
+java -jar target/dupelens.jar --version
+java -jar target/dupelens-review.jar --version
+```
+
+The version comes from Maven's packaged manifest; the option exits without scanning, starting a server, or opening a browser. Direct source execution and unpackaged classes report `DupeLens development` rather than claiming a release version. This option is not in the published 1.3.0 downloads yet.
+
 ```sh
 sh scripts/test.sh
 mvn --batch-mode package
@@ -159,13 +168,7 @@ CI runs the Java 17/21 matrix on Linux, macOS, and Windows, checks documentation
 
 ## Community
 
-Want to contribute? Start with a small, scoped task:
-
-| Issue | Work involved |
-| --- | --- |
-| [Add `--version`](https://github.com/illusionoftalha/dupelens/issues/18) | Java CLI behavior and subprocess tests. |
-| [Protect duplicate report options](https://github.com/illusionoftalha/dupelens/issues/19) | A focused regression using temporary files. |
-| [Protect symlink report destinations](https://github.com/illusionoftalha/dupelens/issues/20) | A platform-aware regression with explicit skips. |
+Want to contribute? Browse the current [good first issues](https://github.com/illusionoftalha/dupelens/issues?q=is%3Aissue%20is%3Aopen%20label%3A%22good%20first%20issue%22) or [help-wanted tasks](https://github.com/illusionoftalha/dupelens/issues?q=is%3Aissue%20is%3Aopen%20label%3A%22help%20wanted%22). Check that a task is still open and nobody is working on it before beginning.
 
 Comment on an open issue before starting, then fork the repo and follow the [contribution guide](.github/CONTRIBUTING.md). Suggestions and reproducible bug reports are welcome too.
 
