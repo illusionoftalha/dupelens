@@ -55,6 +55,16 @@ public final class SmokeTest {
             check(sizeLabel(1024 * 1024 - 1).equals("1024.0 KiB"), "just below one MiB stays KiB");
             check(report.contains("2 files"), "group file count");
             check(!report.contains("<script") && !report.contains("src=\"http"), "offline report");
+            List<String> iterationWarnings = new ArrayList<>();
+            FileVisitor<Path> visitor = Main.scanVisitor(root, List.of(), new TreeMap<>(),
+                    iterationWarnings, new HashSet<>(), new long[]{0});
+            Path failedDirectory = root.resolve("unreadable");
+            check(visitor.postVisitDirectory(failedDirectory, new java.io.IOException("input/output error"))
+                    == FileVisitResult.CONTINUE, "directory iteration failure must continue");
+            check(iterationWarnings.equals(List.of(failedDirectory + ": input/output error")),
+                    "directory iteration failure warning");
+            visitor.postVisitDirectory(root, null);
+            check(iterationWarnings.size() == 1, "a normal directory completion adds no warning");
             try { Main.scan(root.resolve("missing")); throw new AssertionError("missing directory accepted"); }
             catch (java.io.IOException expected) { }
             try {

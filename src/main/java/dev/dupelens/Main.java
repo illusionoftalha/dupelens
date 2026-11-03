@@ -90,31 +90,7 @@ public final class Main {
         List<String> warnings = new ArrayList<>();
         Set<Object> identities = new HashSet<>();
         long[] count = {0};
-        Files.walkFileTree(root, new SimpleFileVisitor<>() {
-            @Override public FileVisitResult preVisitDirectory(Path directory, BasicFileAttributes attrs) {
-                if (!directory.equals(scanRoot)) {
-                    Path relative = scanRoot.relativize(directory);
-                    for (Path excluded : exclusions) {
-                        if (excluded.getNameCount() == 1 ? directory.getFileName().equals(excluded) : relative.equals(excluded))
-                            return FileVisitResult.SKIP_SUBTREE;
-                    }
-                }
-                return FileVisitResult.CONTINUE;
-            }
-            @Override public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
-                if (attrs.isRegularFile()) {
-                    count[0]++;
-                    // Hard links already share storage; don't count them twice where file keys exist.
-                    if (attrs.fileKey() != null && !identities.add(attrs.fileKey())) return FileVisitResult.CONTINUE;
-                    sizes.computeIfAbsent(attrs.size(), ignored -> new ArrayList<>()).add(path);
-                }
-                return FileVisitResult.CONTINUE;
-            }
-            @Override public FileVisitResult visitFileFailed(Path path, IOException error) {
-                warnings.add(path + ": " + error.getMessage());
-                return FileVisitResult.CONTINUE;
-            }
-        });
+        Files.walkFileTree(root, scanVisitor(scanRoot, exclusions, sizes, warnings, identities, count));
         List<Group> groups = new ArrayList<>();
         for (var bucket : sizes.entrySet()) {
             if (bucket.getValue().size() < 2) continue;
@@ -144,6 +120,42 @@ public final class Main {
         }
         groups.sort(Comparator.comparingLong(Group::reclaimable).reversed().thenComparing(g -> g.files.get(0).toString()));
         return new Scan(List.copyOf(groups), List.copyOf(warnings), count[0]);
+    }
+
+    /** The walker, kept separate so a directory-iteration failure can be tested without a broken filesystem. */
+    static FileVisitor<Path> scanVisitor(Path scanRoot, List<Path> exclusions, Map<Long, List<Path>> sizes,
+            List<String> warnings, Set<Object> identities, long[] count) {
+        return new SimpleFileVisitor<>() {
+            @Override public FileVisitResult preVisitDirectory(Path directory, BasicFileAttributes attrs) {
+                if (!directory.equals(scanRoot)) {
+                    Path relative = scanRoot.relativize(directory);
+                    for (Path excluded : exclusions) {
+                        if (excluded.getNameCount() == 1 ? directory.getFileName().equals(excluded) : relative.equals(excluded))
+                            return FileVisitResult.SKIP_SUBTREE;
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+            @Override public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
+                if (attrs.isRegularFile()) {
+                    count[0]++;
+                    // Hard links already share storage; don't count them twice where file keys exist.
+                    if (attrs.fileKey() != null && !identities.add(attrs.fileKey())) return FileVisitResult.CONTINUE;
+                    sizes.computeIfAbsent(attrs.size(), ignored -> new ArrayList<>()).add(path);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+            @Override public FileVisitResult visitFileFailed(Path path, IOException error) {
+                warnings.add(path + ": " + error.getMessage());
+                return FileVisitResult.CONTINUE;
+            }
+            @Override public FileVisitResult postVisitDirectory(Path directory, IOException error) {
+                // The inherited method rethrows an error raised while the directory was
+                // being iterated, which would discard the files and siblings read so far.
+                if (error != null) warnings.add(directory + ": " + error.getMessage());
+                return FileVisitResult.CONTINUE;
+            }
+        };
     }
 
     private static String digest(Path path) throws IOException {
