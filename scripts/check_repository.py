@@ -9,10 +9,10 @@ import xml.etree.ElementTree as ET
 ROOT = Path(__file__).resolve().parent.parent
 IGNORED = {".git", "target", "build", ".idea", ".vscode"}
 REQUIRED = (
-    "README.md", "CONTRIBUTING.md", "CODE_OF_CONDUCT.md", "SECURITY.md",
-    "SUPPORT.md", "LICENSE", "CHANGELOG.md", ".github/CODEOWNERS",
+    "README.md", ".github/CONTRIBUTING.md", ".github/CODE_OF_CONDUCT.md", ".github/SECURITY.md",
+    ".github/SUPPORT.md", "LICENSE", "CHANGELOG.md", ".github/CODEOWNERS",
     ".github/PULL_REQUEST_TEMPLATE.md", ".github/ISSUE_TEMPLATE/config.yml",
-    "docs/architecture.md", "docs/maintaining.md",
+    "docs/README.md", "docs/architecture.md", "docs/maintaining.md",
 )
 
 

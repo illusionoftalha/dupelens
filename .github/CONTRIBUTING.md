@@ -35,7 +35,7 @@ The scripts execute assertions in `SmokeTest.main()` and `ReviewTest.main()`. Ma
 - Keep app processing local: no telemetry, remote assets, or remote services.
 - Document new options, defaults, limits, and behavior changes. Do not claim untested support.
 
-See [docs/architecture.md](docs/architecture.md) for the structure and limitations.
+See [docs/architecture.md](../docs/architecture.md) for the structure and limitations.
 
 ## Tests and review
 
@@ -49,6 +49,6 @@ CI checks documentation and tests/packages Java 17/21 on Linux, macOS, and Windo
 
 Explain the problem, resulting behavior, related issue, and validation. Include screenshots for visible UI changes using synthetic paths. Maintainers may ask for revisions or close duplicates with links to existing fixes.
 
-Use descriptive commits and preserve accurate authorship. Do not include secrets, private reports, session URLs, JARs, or unrelated editor files. Contributions use the [MIT license](LICENSE).
+Use descriptive commits and preserve accurate authorship. Do not include secrets, private reports, session URLs, JARs, or unrelated editor files. Contributions use the [MIT license](../LICENSE).
 
-Report vulnerabilities through [SECURITY.md](SECURITY.md), not public issues. Maintainer procedures are in [docs/maintaining.md](docs/maintaining.md).
+Report vulnerabilities through [SECURITY.md](SECURITY.md), not public issues. Maintainer procedures are in [docs/maintaining.md](../docs/maintaining.md).

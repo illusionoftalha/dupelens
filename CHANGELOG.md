@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Simplify the repository root, group community policies under `.github`, and refresh README navigation and the documentation index.
 - Use IEC size labels consistently in reports and browser selections; add formatter boundary tests (PR #6 and follow-up).
 - Add community conduct, private security reporting, support, architecture, and maintainer documentation.
 - Improve contributor onboarding, issue forms, PR templates, ownership, and editor settings.

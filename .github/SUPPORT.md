@@ -4,7 +4,7 @@
 
 | Request | Route |
 | --- | --- |
-| Usage help | Read the [README](README.md) and troubleshooting below, then open a usage-question issue. |
+| Usage help | Read the [README](../README.md) and troubleshooting below, then open a usage-question issue. |
 | Reproducible bug | Use the [bug report form](https://github.com/illusionoftalha/dupelens/issues/new?template=bug_report.yml). |
 | Improvement | Search [open issues](https://github.com/illusionoftalha/dupelens/issues), then use the feature-request form. |
 | Vulnerability | Use the private contact in [SECURITY.md](SECURITY.md). |
@@ -36,7 +36,7 @@ Support depends on the OS, JDK, and desktop session. Headless environments may n
 
 ### Windows cannot establish a loopback connection
 
-Some Windows/JDK environments have trouble creating sockets in their default temporary directory. Try the writable socket-directory command in the [README](README.md#browser-review-and-deletion). The directory must already exist and be writable.
+Some Windows/JDK environments have trouble creating sockets in their default temporary directory. Try the writable socket-directory command in the [README](../README.md#browser-review-and-deletion). The directory must already exist and be writable.
 
 ### Recovered space differs from the estimate
 

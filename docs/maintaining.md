@@ -4,7 +4,7 @@ The current maintainer is [@illusionoftalha](https://github.com/illusionoftalha)
 
 ## Triage and review
 
-- Route vulnerabilities through [SECURITY.md](../SECURITY.md) and conduct concerns through the [Code of Conduct](../CODE_OF_CONDUCT.md).
+- Route vulnerabilities through [SECURITY.md](../.github/SECURITY.md) and conduct concerns through the [Code of Conduct](../.github/CODE_OF_CONDUCT.md).
 - Confirm bugs with disposable fixtures. Use `bug`, `enhancement`, `help wanted`, and `good first issue` according to scope.
 - Check existing work before accepting overlapping PRs. Close duplicates with a concise reason and links.
 - Inspect a first-time contributor's diff, scripts, POM, and workflows before approving waiting CI. Never expose secrets to fork code.
@@ -22,7 +22,7 @@ python scripts/check_artifacts.py
 
 Use `./scripts/test.ps1` on Windows. UI changes need browser checks for keepers, global selection including hidden groups, confirmation/cancellation, and narrow screens. Normal automated tests must use fake Trash. A native Trash smoke test may use only a deliberately created disposable file.
 
-Maven's test-entry limitation is documented in [CONTRIBUTING.md](../CONTRIBUTING.md) and tracked in issue #2. A zero-test Surefire summary is not evidence that checks ran.
+Maven's test-entry limitation is documented in [CONTRIBUTING.md](../.github/CONTRIBUTING.md) and tracked in issue #2. A zero-test Surefire summary is not evidence that checks ran.
 
 ## Releases
 

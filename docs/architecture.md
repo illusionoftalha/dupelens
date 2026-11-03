@@ -33,4 +33,4 @@ Mutation requests validate host, origin, and token. The server uses content/fram
 
 Scanning is not an atomic snapshot; verification and Trash are separate operations. External writers can race the final move. File keys and Trash vary by platform. Path metadata grows with file count; stream buffers are bounded. CLI hash matches are not byte-verified until a review move requests it.
 
-Image similarity, exclusions, cancellation, and persistent logs are not implemented. The [issue tracker](https://github.com/illusionoftalha/dupelens/issues) is the source of truth for planned work. Use [SECURITY.md](../SECURITY.md) for vulnerabilities.
+Image similarity, exclusions, cancellation, and persistent logs are not implemented. The [issue tracker](https://github.com/illusionoftalha/dupelens/issues) is the source of truth for planned work. Use [SECURITY.md](../.github/SECURITY.md) for vulnerabilities.

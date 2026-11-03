@@ -1,13 +1,26 @@
+<div align="center">
+
 # DupeLens
 
-Find duplicate files with a read-only Java CLI, or review copies in a local browser workspace. No runtime dependencies, remote services, or telemetry.
+**Find the copies. Keep what matters.**
+
+A read-only duplicate finder and local browser workspace, built with Java.
+Zero runtime dependencies. No telemetry. Your files stay on your machine.
 
 [![Java checks](https://github.com/illusionoftalha/dupelens/actions/workflows/ci.yml/badge.svg)](https://github.com/illusionoftalha/dupelens/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/illusionoftalha/dupelens)](https://github.com/illusionoftalha/dupelens/releases/latest)
 ![Java 17+](https://img.shields.io/badge/Java-17%2B-blue)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-[Download](https://github.com/illusionoftalha/dupelens/releases/latest) · [Contribute](CONTRIBUTING.md) · [Support](SUPPORT.md) · [Security](SECURITY.md) · [Code of Conduct](CODE_OF_CONDUCT.md)
+[Download](https://github.com/illusionoftalha/dupelens/releases/latest) · [Contribute](.github/CONTRIBUTING.md) · [Support](.github/SUPPORT.md) · [Security](.github/SECURITY.md) · [Code of Conduct](.github/CODE_OF_CONDUCT.md)
+
+</div>
+
+---
+
+![DupeLens saved HTML report](docs/assets/dupelens-screenshot.png)
+
+*An offline report with scan totals, duplicate groups, and full file paths.*
 
 ## Choose your workflow
 
@@ -73,12 +86,6 @@ Compare the JAR's SHA-256 hash with the corresponding line in the release's `SHA
 Get-FileHash .\dupelens-review-1.2.1.jar -Algorithm SHA256
 ```
 
-## Preview
-
-![DupeLens saved HTML report](dupelens-screenshot.png)
-
-The saved report shows the scan summary and full paths. Browser review adds search, keeper selection, and confirmed Trash actions.
-
 ## How it works
 
 Files are grouped by size, then candidates are hashed with SHA-256 in 64 KiB chunks. Matching fingerprints form groups sorted by redundant logical bytes. Symbolic links are skipped, ordinary read failures become warnings, and hard-link aliases are excluded where file identity is available.
@@ -94,7 +101,7 @@ In browser review, the backend accepts only IDs from the current session, checks
 - Reports and logs contain full local paths. Review before sharing; keep live review URLs private.
 - Image similarity, exclusion patterns, scan cancellation, and persistent logs are not implemented.
 
-Read the [architecture](docs/architecture.md) for implementation details and [security policy](SECURITY.md) for reporting and boundaries.
+Read the [architecture](docs/architecture.md) for implementation details and [security policy](.github/SECURITY.md) for reporting and boundaries.
 
 ## Build and test
 
@@ -115,9 +122,20 @@ java src/main/java/dev/dupelens/Main.java ./your-folder
 
 CI runs the Java 17/21 matrix on Linux, macOS, and Windows, checks documentation, and verifies that the CLI JAR excludes review/deletion classes. Automated review tests use temporary fixtures and fake Trash; they never move user files to native Trash.
 
+## Find your way around
+
+| Location | Contents |
+| --- | --- |
+| [`src/`](src/) | Java application code and integration checks. |
+| [`scripts/`](scripts/) | Test runners, repository checks, and release utilities. |
+| [`docs/`](docs/README.md) | Architecture, maintainer guidance, and screenshots. |
+| [`.github/`](.github/) | CI, issue templates, contribution and community policies. |
+| [`pom.xml`](pom.xml) | Maven packaging for the CLI and browser review JARs. |
+| [`CHANGELOG.md`](CHANGELOG.md) | Release history and upcoming changes. |
+
 ## Community
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for setup and review expectations, [open issues](https://github.com/illusionoftalha/dupelens/issues) for contribution opportunities, and [CHANGELOG.md](CHANGELOG.md) for released and unreleased changes. Everyone participating follows the [Code of Conduct](CODE_OF_CONDUCT.md).
+See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for setup and review expectations, [open issues](https://github.com/illusionoftalha/dupelens/issues) for contribution opportunities, and [CHANGELOG.md](CHANGELOG.md) for released and unreleased changes. Everyone participating follows the [Code of Conduct](.github/CODE_OF_CONDUCT.md).
 
 Maintainer procedures are in [docs/maintaining.md](docs/maintaining.md). Support is volunteer-run; response times and release dates are not guaranteed.
 
