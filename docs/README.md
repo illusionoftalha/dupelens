@@ -3,6 +3,7 @@
 | Start here | What you will find |
 | --- | --- |
 | [Download and run](../README.md#download-and-run) | Java requirements, CLI commands, and browser review. |
+| [Try a sample folder](quickstart.md) | A first scan with synthetic files and no Trash operations. |
 | [Architecture](architecture.md) | Scanning, report generation, review safeguards, and limitations. |
 | [Contributing](../.github/CONTRIBUTING.md) | Local setup, tests, and pull request guidance. |
 | [Maintainer guide](maintaining.md) | Triage, validation, releases, and routine upkeep. |
