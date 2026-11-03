@@ -90,8 +90,12 @@ public final class Review implements AutoCloseable {
     URI uri() { return URI.create(origin + basePath); }
 
     public static void main(String[] args) {
+        if (args.length == 1 && args[0].equals("--version")) {
+            System.out.println(Main.version());
+            return;
+        }
         if (args.length == 0 || args[0].equals("--help")) {
-            System.out.println("Usage: java -jar dupelens-review.jar <directory> [--exclude <folder>]...\nA folder name matches at any depth; a relative path matches from the scan root. No folders are excluded by default.\nStarts a local browser session. Nothing is moved until you select files and confirm.");
+            System.out.println("Usage: java -jar dupelens-review.jar <directory> [--exclude <folder>]...\nUse --version to print the build version without starting a browser session.\nA folder name matches at any depth; a relative path matches from the scan root. No folders are excluded by default.\nStarts a local browser session. Nothing is moved until you select files and confirm.");
             return;
         }
         try {

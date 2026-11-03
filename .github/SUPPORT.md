@@ -14,6 +14,10 @@ DupeLens is maintained by volunteers. Response and delivery dates are not guaran
 
 ## Troubleshooting
 
+### Include the build version in a bug report
+
+Source-built JARs support `java -jar target/dupelens.jar --version` and `java -jar target/dupelens-review.jar --version`. These commands exit before scanning or starting a browser session. Unpackaged classes report `development`; include the commit hash when reporting those builds. For the published 1.3.0 downloads, use the version from the release asset name instead.
+
 ### Java is missing or too old
 
 Run `java -version`. DupeLens requires Java 17 or newer. Compilation also needs `javac` from a JDK; check `javac -version` before running tests. Restart your terminal after changing Java or PATH.

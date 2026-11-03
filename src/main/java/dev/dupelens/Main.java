@@ -49,9 +49,18 @@ public final class Main {
         return Path.of(portable).normalize();
     }
 
+    static String version() {
+        String version = Main.class.getPackage().getImplementationVersion();
+        return "DupeLens " + (version == null ? "development" : version);
+    }
+
     public static void main(String[] args) {
+        if (args.length == 1 && args[0].equals("--version")) {
+            System.out.println(version());
+            return;
+        }
         if (args.length == 0 || args[0].equals("--help")) {
-            System.out.println("DupeLens — find duplicate files, change nothing.\nUsage: java -jar dupelens.jar <directory> [--exclude <folder>]... [--html <report.html>]\nA folder name matches at any depth; a relative path matches from the scan root. No folders are excluded by default.");
+            System.out.println("DupeLens — find duplicate files, change nothing.\nUsage: java -jar dupelens.jar <directory> [--exclude <folder>]... [--html <report.html>]\nUse --version to print the build version without scanning.\nA folder name matches at any depth; a relative path matches from the scan root. No folders are excluded by default.");
             return;
         }
         try {
