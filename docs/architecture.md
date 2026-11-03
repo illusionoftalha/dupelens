@@ -12,7 +12,7 @@ DupeLens is one Java 17 Maven project with two executable JARs and no runtime de
 
 ## Scan flow
 
-1. Walk regular files without following symlinks, group paths by size, and track identities to avoid counting hard links twice where supported.
+1. Skip explicitly excluded directory subtrees, then walk regular files without following symlinks, group paths by size, and track identities to avoid counting hard links twice where supported.
 2. Hash only size buckets with multiple candidates. SHA-256 reads 64 KiB chunks; metadata is checked around hashing.
 3. Group fingerprints, check aliases with `Files.isSameFile`, and sort by redundant logical bytes.
 4. Return immutable result lists. The CLI prints them and can write a new script-free HTML report with `CREATE_NEW`.
@@ -33,4 +33,4 @@ Mutation requests validate host, origin, and token. The server uses content/fram
 
 Scanning is not an atomic snapshot; verification and Trash are separate operations. External writers can race the final move. File keys and Trash vary by platform. Path metadata grows with file count; stream buffers are bounded. CLI hash matches are not byte-verified until a review move requests it.
 
-Image similarity, exclusions, cancellation, and persistent logs are not implemented. The [issue tracker](https://github.com/illusionoftalha/dupelens/issues) is the source of truth for planned work. Use [SECURITY.md](../.github/SECURITY.md) for vulnerabilities.
+Image similarity, wildcard exclusions, cancellation, and persistent logs are not implemented. The [issue tracker](https://github.com/illusionoftalha/dupelens/issues) is the source of truth for planned work. Use [SECURITY.md](../.github/SECURITY.md) for vulnerabilities.

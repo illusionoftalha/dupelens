@@ -22,7 +22,7 @@ python scripts/check_artifacts.py
 
 Use `./scripts/test.ps1` on Windows. UI changes need browser checks for keepers, global selection including hidden groups, confirmation/cancellation, and narrow screens. Normal automated tests must use fake Trash. A native Trash smoke test may use only a deliberately created disposable file.
 
-Maven's test-entry limitation is documented in [CONTRIBUTING.md](../.github/CONTRIBUTING.md) and tracked in issue #2. A zero-test Surefire summary is not evidence that checks ran.
+Both `mvn test` and `mvn package` run `SmokeTest.main()` and `ReviewTest.main()` in separate JVMs through the build-only Exec plugin. Assertion failures and nonzero exits fail the build. Surefire is disabled because these suites use main methods, not a test framework. The standalone test scripts still work without Maven. `-DskipTests` deliberately skips both suites and is not validation evidence. Python 3.10+ is used only for repository and packaging checks.
 
 ## Releases
 

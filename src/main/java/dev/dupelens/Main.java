@@ -14,15 +14,49 @@ public final class Main {
     }
     public record Scan(List<Group> groups, List<String> warnings, long files) {}
 
+    record Options(Path directory, Path report, List<Path> exclusions) {}
+
+    static Options options(String[] args, boolean allowReport) {
+        if (args.length == 0 || args[0].startsWith("--"))
+            throw new IllegalArgumentException("Expected a directory before options");
+        Path report = null;
+        List<Path> exclusions = new ArrayList<>();
+        for (int i = 1; i < args.length; i++) {
+            String option = args[i];
+            if ((!option.equals("--exclude") && !(allowReport && option.equals("--html")))
+                    || i + 1 == args.length || args[i + 1].startsWith("--"))
+                throw new IllegalArgumentException("Expected --exclude <folder>" + (allowReport ? " or --html <new-report.html>" : ""));
+            String value = args[++i];
+            if (option.equals("--exclude")) exclusions.add(exclusion(value));
+            else {
+                if (report != null) throw new IllegalArgumentException("--html may only be used once");
+                report = Path.of(value);
+            }
+        }
+        return new Options(Path.of(args[0]), report, List.copyOf(exclusions));
+    }
+
+    private static Path exclusion(String value) {
+        // Accept portable folder names or slash-separated paths relative to the scan root.
+        String portable = value.replace('\\', '/');
+        if (portable.isBlank() || portable.startsWith("/") || portable.contains(":")
+                || portable.matches(".*[?*\\[\\]{}].*"))
+            throw new IllegalArgumentException("Exclusions must be folder names or relative paths, without wildcards");
+        for (String part : portable.split("/")) {
+            if (part.equals("..") || part.equals("."))
+                throw new IllegalArgumentException("Exclusions cannot contain . or .. segments");
+        }
+        return Path.of(portable).normalize();
+    }
+
     public static void main(String[] args) {
         if (args.length == 0 || args[0].equals("--help")) {
-            System.out.println("DupeLens — find duplicate files, change nothing.\nUsage: java -jar dupelens.jar <directory> [--html <report.html>]");
+            System.out.println("DupeLens — find duplicate files, change nothing.\nUsage: java -jar dupelens.jar <directory> [--exclude <folder>]... [--html <report.html>]\nA folder name matches at any depth; a relative path matches from the scan root. No folders are excluded by default.");
             return;
         }
         try {
-            if (args.length != 1 && !(args.length == 3 && args[1].equals("--html")))
-                throw new IllegalArgumentException("Expected <directory> [--html <report.html>]");
-            Scan scan = scan(Path.of(args[0]));
+            Options options = options(args, true);
+            Scan scan = scan(options.directory(), options.exclusions());
             long bytes = scan.groups.stream().mapToLong(Group::reclaimable).sum();
             System.out.printf("Scanned %d files | %d duplicate groups | %,d redundant bytes%n", scan.files, scan.groups.size(), bytes);
             for (Group group : scan.groups) {
@@ -30,8 +64,8 @@ public final class Main {
                 group.files.forEach(p -> System.out.println("  " + p));
             }
             scan.warnings.forEach(w -> System.err.println("Warning: " + w));
-            if (args.length == 3) {
-                Path report = Path.of(args[2]).toAbsolutePath();
+            if (options.report() != null) {
+                Path report = options.report().toAbsolutePath();
                 // Never replace an existing file, even if it happens to be an input.
                 Files.writeString(report, html(scan), StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW);
                 System.out.println("\nReport: " + report);
@@ -43,7 +77,13 @@ public final class Main {
     }
 
     public static Scan scan(Path root) throws IOException {
+        return scan(root, List.of());
+    }
+
+    public static Scan scan(Path root, List<Path> excludedFolders) throws IOException {
         root = root.toAbsolutePath().normalize();
+        final Path scanRoot = root;
+        final List<Path> exclusions = excludedFolders.stream().map(p -> exclusion(p.toString())).toList();
         if (!Files.isDirectory(root, LinkOption.NOFOLLOW_LINKS))
             throw new IOException("Not a directory: " + root);
         Map<Long, List<Path>> sizes = new TreeMap<>();
@@ -51,6 +91,16 @@ public final class Main {
         Set<Object> identities = new HashSet<>();
         long[] count = {0};
         Files.walkFileTree(root, new SimpleFileVisitor<>() {
+            @Override public FileVisitResult preVisitDirectory(Path directory, BasicFileAttributes attrs) {
+                if (!directory.equals(scanRoot)) {
+                    Path relative = scanRoot.relativize(directory);
+                    for (Path excluded : exclusions) {
+                        if (excluded.getNameCount() == 1 ? directory.getFileName().equals(excluded) : relative.equals(excluded))
+                            return FileVisitResult.SKIP_SUBTREE;
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
             @Override public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) {
                 if (attrs.isRegularFile()) {
                     count[0]++;

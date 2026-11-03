@@ -94,6 +94,44 @@ public final class SmokeTest {
             check(invalidArguments.exitCode() != 0, "invalid arguments should make CLI exit nonzero");
             check(Arrays.equals(Files.readAllBytes(firstInput), inputBytes), "first scanned file must remain unchanged");
             check(Arrays.equals(Files.readAllBytes(secondInput), inputBytes), "second scanned file must remain unchanged");
+            Path excludedInput = Files.createDirectory(root.resolve("exclusion fixtures"));
+            for (String name : List.of("keep.txt", "copy.txt", ".git/hidden.txt", "nested/.git/hidden.txt",
+                    "node_modules/package.txt", "nested/cache/hidden.txt", "cache/keep.txt", "nested/cache2/keep.txt")) {
+                Path file = excludedInput.resolve(name);
+                Files.createDirectories(file.getParent());
+                Files.writeString(file, "same");
+            }
+            check(Main.scan(excludedInput).files() == 8, "default scan must not hide folders");
+            var filtered = Main.scan(excludedInput, List.of(Path.of(".git"), Path.of("node_modules"), Path.of("nested/cache")));
+            check(filtered.files() == 4, "excluded subtrees must not contribute to scan counts");
+            check(filtered.groups().size() == 1 && filtered.groups().get(0).files().size() == 4,
+                    "excluded copies must not contribute to duplicate groups");
+            check(filtered.groups().get(0).files().contains(excludedInput.resolve("cache/keep.txt").toAbsolutePath()),
+                    "relative exclusion must not match the same folder elsewhere");
+            check(filtered.groups().get(0).files().contains(excludedInput.resolve("nested/cache2/keep.txt").toAbsolutePath()),
+                    "relative exclusion must not match a name prefix");
+            check(Main.scan(excludedInput, List.of(Path.of("keep.txt"))).files() == 8,
+                    "folder exclusions must not exclude a regular file");
+            check(Main.scan(excludedInput.resolve(".git"), List.of(Path.of(".git"))).files() == 1,
+                    "explicit scan root must not exclude itself");
+            for (String invalid : List.of("", " ", ".", "..", "nested/../cache", "/absolute", "C:\\cache", "*.tmp")) {
+                try { Main.options(new String[] {excludedInput.toString(), "--exclude", invalid}, true);
+                    throw new AssertionError("invalid exclusion accepted: " + invalid);
+                } catch (IllegalArgumentException expected) { }
+            }
+            check(Main.options(new String[] {excludedInput.toString(), "--exclude", "nested\\cache"}, false)
+                    .exclusions().equals(List.of(Path.of("nested/cache"))), "portable path separators");
+            Path filteredReport = root.resolve("filtered report.html");
+            CliResult excluded = runCli(excludedInput.toString(), "--exclude", ".git", "--html", filteredReport.toString(),
+                    "--exclude", "node_modules", "--exclude", "nested/cache");
+            check(excluded.exitCode() == 0 && excluded.output().contains("Scanned 4 files"),
+                    "CLI must apply repeated exclusions alongside HTML output: " + excluded.output());
+            check(!Files.readString(filteredReport).contains("hidden.txt"), "excluded paths leaked into report");
+            check(runCli(excludedInput.toString(), "--exclude").exitCode() != 0, "missing exclusion value accepted");
+            check(runCli(excludedInput.toString(), "--unknown", "folder").exitCode() != 0, "unknown option accepted");
+            try { Main.options(new String[] {excludedInput.toString(), "--html", "report.html"}, false);
+                throw new AssertionError("browser review accepted a CLI-only option");
+            } catch (IllegalArgumentException expected) { }
             System.out.println("All integration checks passed.");
         } finally {
             try (var paths = Files.walk(root)) {

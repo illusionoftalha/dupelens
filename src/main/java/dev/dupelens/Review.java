@@ -90,13 +90,14 @@ public final class Review implements AutoCloseable {
     URI uri() { return URI.create(origin + basePath); }
 
     public static void main(String[] args) {
-        if (args.length != 1 || args[0].equals("--help")) {
-            System.out.println("Usage: java -jar dupelens-review.jar <directory>\nStarts a local browser session. Nothing is moved until you select files and confirm.");
+        if (args.length == 0 || args[0].equals("--help")) {
+            System.out.println("Usage: java -jar dupelens-review.jar <directory> [--exclude <folder>]...\nA folder name matches at any depth; a relative path matches from the scan root. No folders are excluded by default.\nStarts a local browser session. Nothing is moved until you select files and confirm.");
             return;
         }
         try {
-            System.out.println("Scanning " + Path.of(args[0]).toAbsolutePath() + " …");
-            Main.Scan scan = Main.scan(Path.of(args[0]));
+            Main.Options options = Main.options(args, false);
+            System.out.println("Scanning " + options.directory().toAbsolutePath() + " …");
+            Main.Scan scan = Main.scan(options.directory(), options.exclusions());
             Review review = new Review(scan, new SystemTrash());
             Runtime.getRuntime().addShutdownHook(new Thread(review::close));
             System.out.println("Open this private local session: " + review.uri());

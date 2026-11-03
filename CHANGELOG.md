@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Execute the dependency-free scanner and review safety suites during `mvn test` and `mvn package`, failing the build on errors.
+- Add repeated `--exclude` folder options to both CLI and browser-review startup; skip matched subtrees before scanning.
+
 - Simplify the repository root, group community policies under `.github`, and refresh README navigation and the documentation index.
 - Use IEC size labels consistently in reports and browser selections; add formatter boundary tests (PR #6 and follow-up).
 - Add community conduct, private security reporting, support, architecture, and maintainer documentation.

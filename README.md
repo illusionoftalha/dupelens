@@ -86,6 +86,17 @@ Compare the JAR's SHA-256 hash with the corresponding line in the release's `SHA
 Get-FileHash .\dupelens-review-1.2.1.jar -Algorithm SHA256
 ```
 
+## Skip folders when scanning
+
+Available in source builds of the next version; the published 1.2.1 JARs do not support this option yet. Build with `mvn package`, then repeat `--exclude` for each folder to skip:
+
+```sh
+java -jar target/dupelens.jar "/path/to/folder" --exclude .git --exclude node_modules --html report.html
+java -jar target/dupelens-review.jar "/path/to/folder" --exclude "old backups" --exclude projects/cache
+```
+
+A single folder name matches at any depth. A multi-component path matches from the scan root; both slash styles are accepted. Matching follows the platform's path case rules. Excluded subtrees do not appear in counts, reports, or review selections. No folders are excluded by default, and the explicitly selected scan root is always scanned. Exclusions apply to folders, not individual files; wildcards, absolute paths, and `.` or `..` segments are rejected.
+
 ## How it works
 
 Files are grouped by size, then candidates are hashed with SHA-256 in 64 KiB chunks. Matching fingerprints form groups sorted by redundant logical bytes. Symbolic links are skipped, ordinary read failures become warnings, and hard-link aliases are excluded where file identity is available.
@@ -99,7 +110,7 @@ In browser review, the backend accepts only IDs from the current session, checks
 - Space estimates measure redundant logical bytes. Compression, deduplication, snapshots, filesystem allocation, and Trash retention affect actual free space.
 - File metadata grows with file count, although stream buffers are bounded. Empty files may form zero-space groups.
 - Reports and logs contain full local paths. Review before sharing; keep live review URLs private.
-- Image similarity, exclusion patterns, scan cancellation, and persistent logs are not implemented.
+- Image similarity, wildcard exclusion patterns, scan cancellation, and persistent logs are not implemented.
 
 Read the [architecture](docs/architecture.md) for implementation details and [security policy](.github/SECURITY.md) for reporting and boundaries.
 
@@ -112,7 +123,7 @@ python scripts/check_repository.py
 python scripts/check_artifacts.py
 ```
 
-On Windows use `./scripts/test.ps1`. Python 3.10+ is used only for repository and packaging checks. Test scripts execute the actual integration/safety assertions; Maven currently compiles those main-method tests without running them. [Issue #2](https://github.com/illusionoftalha/dupelens/issues/2) tracks Maven test execution.
+Both `mvn test` and `mvn package` run `SmokeTest.main()` and `ReviewTest.main()` in separate JVMs through the build-only Exec plugin. Assertion failures and nonzero exits fail the build. Surefire is disabled because these suites use main methods, not a test framework. The standalone test scripts still work without Maven. `-DskipTests` deliberately skips both suites and is not validation evidence. Python 3.10+ is used only for repository and packaging checks.
 
 Maven creates `target/dupelens.jar` and `target/dupelens-review.jar`. Direct CLI source execution remains supported:
 

@@ -24,7 +24,7 @@ python scripts/check_artifacts.py
 
 On Windows run `./scripts/test.ps1` instead of the shell test script. See [SUPPORT.md](SUPPORT.md) for socket troubleshooting.
 
-The scripts execute assertions in `SmokeTest.main()` and `ReviewTest.main()`. Maven currently compiles those classes but Surefire does not run their main methods, so `mvn test` alone is not evidence that the suite passed. [Issue #2](https://github.com/illusionoftalha/dupelens/issues/2) tracks that improvement.
+Both `mvn test` and `mvn package` run `SmokeTest.main()` and `ReviewTest.main()` in separate JVMs through the build-only Exec plugin. Assertion failures and nonzero exits fail the build. Surefire is disabled because these suites use main methods, not a test framework. The standalone test scripts still work without Maven. `-DskipTests` deliberately skips both suites and is not validation evidence. Python 3.10+ is used only for repository and packaging checks.
 
 ## Project boundaries
 

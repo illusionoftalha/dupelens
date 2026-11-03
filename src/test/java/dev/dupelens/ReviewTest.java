@@ -140,6 +140,24 @@ public final class ReviewTest {
             var reloaded = client.send(HttpRequest.newBuilder(url).GET().build(), HttpResponse.BodyHandlers.ofString());
             check(reloaded.body().contains("REMOVED='0:1'"), "reload lost successful action state");
         }
+        try (Fixture f = new Fixture()) {
+            Path excluded = Files.createDirectories(f.root.resolve("node_modules"));
+            Files.writeString(excluded.resolve("excluded-copy.txt"), "same");
+            Main.Options options = Main.options(new String[] {f.root.toString(), "--exclude", "node_modules"}, false);
+            Main.Scan filtered = Main.scan(options.directory(), options.exclusions());
+            check(filtered.files() == 3 && filtered.groups().get(0).files().size() == 3,
+                    "review scan must exclude selected folders");
+            try (Review review = new Review(filtered, new Review.Trash() {
+                public boolean supported() { return true; }
+                public boolean move(Path path) { throw new AssertionError("page request must not move files"); }
+            })) {
+                var page = HttpClient.newHttpClient().send(HttpRequest.newBuilder(review.uri()).GET().build(),
+                        HttpResponse.BodyHandlers.ofString());
+                check(page.statusCode() == 200 && !page.body().contains("excluded-copy.txt"),
+                        "excluded copies must not appear in browser review");
+                rejected(() -> review.moveSelected(List.of("0:3")), "excluded copy received a selectable ID");
+            }
+        }
         System.out.println("All review safety and HTTP checks passed (test Trash only).");
     }
 }
