@@ -35,8 +35,8 @@ Both require **Java 17 or newer**. Building from source also requires a JDK and 
 
 Download a JAR from [GitHub Releases](https://github.com/illusionoftalha/dupelens/releases/latest). The current stable assets are:
 
-- **`dupelens-1.2.1.jar`** — read-only CLI and saved reports.
-- **`dupelens-review-1.2.1.jar`** — browser review and confirmed Trash actions.
+- **`dupelens-1.3.0.jar`** — read-only CLI and saved reports.
+- **`dupelens-review-1.3.0.jar`** — browser review and confirmed Trash actions.
 - **`SHA256SUMS.txt`** — SHA-256 checksums for both JARs.
 
 The source-code ZIP is not a runnable application. Run from the folder containing the JAR and quote paths with spaces.
@@ -44,7 +44,7 @@ The source-code ZIP is not a runnable application. Run from the folder containin
 ### Read-only scan and report
 
 ```sh
-java -jar dupelens-1.2.1.jar "/path/to/folder" --html report.html
+java -jar dupelens-1.3.0.jar "/path/to/folder" --html report.html
 ```
 
 Open `report.html` in a browser. The self-contained report has no JavaScript, server, remote assets, or delete controls. Choose a new filename if the report already exists.
@@ -54,13 +54,13 @@ Open `report.html` in a browser. The self-contained report has no JavaScript, se
 From PowerShell on Windows:
 
 ```powershell
-java -jar .\dupelens-review-1.2.1.jar "C:\Users\YourName\Downloads"
+java -jar .\dupelens-review-1.3.0.jar "C:\Users\YourName\Downloads"
 ```
 
 On Linux or macOS:
 
 ```sh
-java -jar dupelens-review-1.2.1.jar "/path/to/folder"
+java -jar dupelens-review-1.3.0.jar "/path/to/folder"
 ```
 
 After scanning, the app opens a private local URL or prints it for you to open. **Keep the terminal running** while using the browser; Ctrl+C ends the session. Browser review uses JavaScript and connects only to the Java process on `127.0.0.1`.
@@ -75,7 +75,7 @@ Large selections use sequential requests of up to 500 IDs after one confirmation
 If a Windows JDK reports `Unable to establish loopback connection`, try a writable socket directory. The current directory must exist and be writable:
 
 ```powershell
-java "-Djdk.net.unixdomain.tmpdir=$PWD" -jar .\dupelens-review-1.2.1.jar "C:\Users\YourName\Downloads"
+java "-Djdk.net.unixdomain.tmpdir=$PWD" -jar .\dupelens-review-1.3.0.jar "C:\Users\YourName\Downloads"
 ```
 
 ### Verify a download
@@ -83,16 +83,16 @@ java "-Djdk.net.unixdomain.tmpdir=$PWD" -jar .\dupelens-review-1.2.1.jar "C:\Use
 Compare the JAR's SHA-256 hash with the corresponding line in the release's `SHA256SUMS.txt`. In PowerShell:
 
 ```powershell
-Get-FileHash .\dupelens-review-1.2.1.jar -Algorithm SHA256
+Get-FileHash .\dupelens-review-1.3.0.jar -Algorithm SHA256
 ```
 
 ## Skip folders when scanning
 
-Available in source builds of the next version; the published 1.2.1 JARs do not support this option yet. Build with `mvn package`, then repeat `--exclude` for each folder to skip:
+Available in version 1.3.0 and newer. Repeat `--exclude` for each folder to skip:
 
 ```sh
-java -jar target/dupelens.jar "/path/to/folder" --exclude .git --exclude node_modules --html report.html
-java -jar target/dupelens-review.jar "/path/to/folder" --exclude "old backups" --exclude projects/cache
+java -jar dupelens-1.3.0.jar "/path/to/folder" --exclude .git --exclude node_modules --html report.html
+java -jar dupelens-review-1.3.0.jar "/path/to/folder" --exclude "old backups" --exclude projects/cache
 ```
 
 A single folder name matches at any depth. A multi-component path matches from the scan root; both slash styles are accepted. Matching follows the platform's path case rules. Excluded subtrees do not appear in counts, reports, or review selections. No folders are excluded by default, and the explicitly selected scan root is always scanned. Exclusions apply to folders, not individual files; wildcards, absolute paths, and `.` or `..` segments are rejected.

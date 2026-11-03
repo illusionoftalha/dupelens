@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+No changes yet.
+
+## 1.3.0 — 2026-11-03
+
 - Execute the dependency-free scanner and review safety suites during `mvn test` and `mvn package`, failing the build on errors.
 - Add repeated `--exclude` folder options to both CLI and browser-review startup; skip matched subtrees before scanning.
 
