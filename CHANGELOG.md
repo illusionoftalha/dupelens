@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Report a directory iteration failure as a scan warning and keep the results from readable files and sibling directories.
+- Add a short CLI walkthrough, a synthetic sample-folder quickstart, and links to scoped starter contributions.
 
 ## 1.3.0 — 2026-11-03
 

@@ -18,9 +18,22 @@ Zero runtime dependencies. No telemetry. Your files stay on your machine.
 
 ---
 
+## See it in 30 seconds
+
+![DupeLens CLI demo: scan synthetic files, exclude a dependency folder, and export an offline report](docs/assets/cli-demo.gif)
+
+*Walkthrough rendered from actual 1.3.0 CLI output using synthetic files. No files are moved.*
+
+**Try it:** [download the CLI JAR](https://github.com/illusionoftalha/dupelens/releases/download/v1.3.0/dupelens-1.3.0.jar) · [download browser review](https://github.com/illusionoftalha/dupelens/releases/download/v1.3.0/dupelens-review-1.3.0.jar) · [follow the sample-folder walkthrough](docs/quickstart.md)
+
+<details>
+<summary>Preview the saved HTML report</summary>
+
 ![DupeLens saved HTML report](docs/assets/dupelens-screenshot.png)
 
-*An offline report with scan totals, duplicate groups, and full file paths.*
+An offline report with scan totals, duplicate groups, and full file paths.
+
+</details>
 
 ## Choose your workflow
 
@@ -145,6 +158,18 @@ CI runs the Java 17/21 matrix on Linux, macOS, and Windows, checks documentation
 | [`CHANGELOG.md`](CHANGELOG.md) | Release history and upcoming changes. |
 
 ## Community
+
+Want to contribute? Start with a small, scoped task:
+
+| Issue | Work involved |
+| --- | --- |
+| [Add `--version`](https://github.com/illusionoftalha/dupelens/issues/18) | Java CLI behavior and subprocess tests. |
+| [Protect duplicate report options](https://github.com/illusionoftalha/dupelens/issues/19) | A focused regression using temporary files. |
+| [Protect symlink report destinations](https://github.com/illusionoftalha/dupelens/issues/20) | A platform-aware regression with explicit skips. |
+
+Comment on an open issue before starting, then fork the repo and follow the [contribution guide](.github/CONTRIBUTING.md). Suggestions and reproducible bug reports are welcome too.
+
+Tried DupeLens? [Tell us](https://github.com/illusionoftalha/dupelens/issues/new?template=question.yml) your OS/Java version, what you tried, and what was confusing. Use synthetic paths and never share private reports or live session URLs. If the project is useful to you, a star helps others discover it.
 
 See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for setup and review expectations, [open issues](https://github.com/illusionoftalha/dupelens/issues) for contribution opportunities, and [CHANGELOG.md](CHANGELOG.md) for released and unreleased changes. Everyone participating follows the [Code of Conduct](.github/CODE_OF_CONDUCT.md).
 
